@@ -66,3 +66,20 @@ class QuestionModelTests(TestCase):
         )
         recent_question = Question(pub_date=time)
         self.assertIs(recent_question.was_published_recently(), True)
+
+    class QuestionDetailViewTests(TestCase):
+        def test_should_display_404_with_future_question(self):
+            future_question = create_question(
+                question_text="Future question.", days=5
+            )
+            url = reverse("polls:detail", args=(future_question.id,))
+            response = self.client.get(url)
+            self.assertEqual(404, response.status_code)
+
+        def test_should_display_past_questions(self):
+            past_question = create_question(
+                question_text="Past Question.", days=-5
+            )
+            url = reverse("polls:detail", args=(past_question.id,))
+            response = self.client.get(url)
+            self.assertContains(response, past_question.question_text)
