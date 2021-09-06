@@ -12,11 +12,11 @@ def create_question(question_text, days):
 
 
 class QuestionIndexViewTests(TestCase):
-    def no_questions_exist_display_message(self):
+    def test_should_display_no_polls_are_available_if_no_question(self):
         response = self.client.get(reverse("polls:index"))
-        self.assertContains("No polls are available.", response)
+        self.assertContains(response, "No polls are available.")
 
-    def question_with_past_pub_date_display_index_page(self):
+    def test_should_display_past_question(self):
         question = create_question(question_text="Past question.", days=-30)
         response = self.client.get(reverse("polls:index"))
         self.assertQuerysetEqual(
@@ -24,21 +24,23 @@ class QuestionIndexViewTests(TestCase):
             [question],
         )
 
-    def question_with_future_pub_date_not_display_index_page(self):
+    def test_question_should_display_no_polls_with_future_pub_date(self):
         create_question(question_text="Future question.", days=30)
         response = self.client.get(reverse("polls:index"))
-        self.assertContains("No polls are available.", response)
+        self.assertContains(response, "No polls are available.")
 
-    def both_past_and_future_question_exist_display_past_questions(self):
-        question = create_question(question_text="Past question.", days=-30)
-        create_question(question_text="Future question.", days=30)
+    def test_should_not_display_future_questions(self):
+        create_question(question_text="Past question.", days=-30)
+        future_question = create_question(
+            question_text="Future question.", days=30
+        )
         response = self.client.get(reverse("polls:index"))
-        self.assertQuerysetEqual(
-            response.context["latest_question_list"],
-            [question],
+        print("check", response.content)
+        self.assertTrue(
+            future_question not in response.context["latest_question_list"],
         )
 
-    def display_multiple_questions_in_index_page(self):
+    def test_display_multiple_questions_in_index_page(self):
         question1 = create_question(question_text="Past question 1.", days=-30)
         question2 = create_question(question_text="Past question 2.", days=-5)
         response = self.client.get(reverse("polls:index"))
