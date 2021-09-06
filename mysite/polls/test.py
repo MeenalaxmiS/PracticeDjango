@@ -24,11 +24,6 @@ class QuestionIndexViewTests(TestCase):
             [question],
         )
 
-    def test_question_should_display_no_polls_with_future_pub_date(self):
-        create_question(question_text="Future question.", days=30)
-        response = self.client.get(reverse("polls:index"))
-        self.assertContains(response, "No polls are available.")
-
     def test_should_not_display_future_questions(self):
         create_question(question_text="Past question.", days=-30)
         future_question = create_question(
