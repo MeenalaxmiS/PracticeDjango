@@ -68,11 +68,7 @@ class QuestionModelTests(TestCase):
         self.assertIs(recent_question.was_published_recently(), True)
 
     class QuestionDetailViewTests(TestCase):
-        def test_future_question(self):
-            """
-            The detail view of a question with a pub_date in the future
-            returns a 404 not found.
-            """
+        def test_should_display_404page_with_future_question(self):
             future_question = create_question(
                 question_text="Future question.", days=5
             )
@@ -80,11 +76,7 @@ class QuestionModelTests(TestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 404)
 
-        def test_past_question(self):
-            """
-            The detail view of a question with a pub_date in the past
-            displays the question's text.
-            """
+        def test_should_display_past_questions(self):
             past_question = create_question(
                 question_text="Past Question.", days=-5
             )
