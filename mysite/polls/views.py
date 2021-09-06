@@ -3,6 +3,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 from .models import Question, Choice
 from django.views import generic
+from django.utils import timezone
 
 
 class IndexView(generic.ListView):
